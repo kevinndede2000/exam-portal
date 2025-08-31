@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📘 KCSE School Report Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h2 {
+            color: #007BFF;
+        }
+        table {
+            border-collapse: collapse;
+            width: 70%;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #333;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        .summary {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .remarks-box {
+            margin-top: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 8px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>📘 KCSE School Report Form</h2>
+
+    <p><b>Student Name:</b> {{ student.name }}</p>
+    <p><b>Admission No:</b> __________</p>
+    <p><b>Class:</b> __________</p>
+
+    <h3>Subject Performance</h3>
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Score</th>
+            <th>Grade</th>
+        </tr>
+        {% for subj in subjects %}
+        <tr>
+            <td>{{ subj }}</td>
+            <td>{{ student.subjects.get(subj, 0) }}</td>
+            <td>{{ grades[subj] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="summary">
+        <p><b>Total Marks:</b> {{ total }}</p>
+        <p><b>Performance:</b> {{ performance }}</p>
+    </div>
+
+    <div class="remarks-box">
+        <h3>Remarks</h3>
+        <form method="POST">
+            <textarea name="remarks">{{ student.get('remarks', '') }}</textarea><br>
+            <button type="submit">Update Remarks</button>
+        </form>
+    </div>
+
+    <p><a href="{{ url_for('home') }}">⬅ Back to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Junior School Exam Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 20px;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            margin: 0;
+            color: #222;
+        }
+
+        .logout-link a {
+            text-decoration: none;
+            color: #fff;
+            background: #e74c3c;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .logout-link a:hover {
+            background: #c0392b;
+        }
+
+        .form-box {
+            background: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            width: 360px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-box input,
+        .form-box select,
+        .form-box button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-box button {
+            background: #007BFF;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-box button:hover {
+            background: #0056b3;
+        }
+
+        h3 {
+            margin-top: 40px;
+            color: #222;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        th {
+            background: #007BFF;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .view-link {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .view-link:hover {
+            text-decoration: underline;
+        }
+
+        canvas {
+            margin-top: 20px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>🎓 Junior School Exam Portal</h2>
+        <div class="logout-link"><a href="/logout">Log Out</a></div>
+    </header>
+
+    <!-- Student Marks Entry Form -->
+    <section>
+        <h3>➕ Enter Student Marks</h3>
+        <div class="form-box">
+            <form action="/submit" method="POST">
+                <input name="name" placeholder="Student Name" required>
+                <select name="subject" required>
+                    <option value="" disabled selected>Select Subject</option>
+                    {% for subj in subjects %}
+                        <option value="{{ subj }}">{{ subj }}</option>
+                    {% endfor %}
+                </select>
+                <input name="score" type="number" placeholder="Score" required>
+                <input name="remarks" placeholder="Optional Remarks">
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Class Performance Averages -->
+    <section>
+        <h3>📊 Class Performance Dashboard</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Average Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subj, avg in averages.items() %}
+                    <tr>
+                        <td>{{ subj }}</td>
+                        <td>{{ avg }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Chart Section -->
+    <section>
+        <h3>📈 Class Average Chart</h3>
+        <canvas id="averageChart" width="800" height="400"></canvas>
+    </section>
+
+    <!-- Student Records -->
+    <section>
+        <h3>📋 Student Records</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    {% for subj in subjects %}
+                        <th>{{ subj }}</th>
+                    {% endfor %}
+                    <th>Total</th>
+                    <th>Performance</th>
+                    <th>Rank</th>
+                    <th>Remarks</th>
+                    <th>Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    {% for subj in subjects %}
+                        <td>{{ student.subjects.get(subj, 0) }}</td>
+                    {% endfor %}
+                    <td>{{ student.total }}</td>
+                    <td>{{ student.performance }}</td>
+                    <td>{{ student.rank }}</td>
+                    <td>{{ student.remarks }}</td>
+                    <td>
+                        <a href="{{ url_for('report', name=student['name']) }}" class="btn btn-info">View Report</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <script>
+        const labels = {{ subjects | tojson }};
+        const averages = {{ averages | tojson }};
+
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Average Score per Subject',
+                data: labels.map(subj => averages[subj] || 0),
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 10
+                        }
+                    }
+                }
+            }
+        };
+
+        window.onload = () => {
+            new Chart(document.getElementById('averageChart'), config);
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+[
+  {
+    "name": "KEVIN NDEDE",
+    "subjects": {
+      "English": 7,
+      "Kiswahili": 80,
+      "Math": 79,
+      "Science": 39,
+      "Social Studies": 25
+    },
+    "remarks": "excellent",
+    "total": 205,
+    "performance": "Fair",
+    "rank": 1
+  },
+  {
+    "name": "KEVIN olo",
+    "subjects": {
+      "English": 56
+    },
+    "remarks": "excellent",
+    "total": 56,
+    "performance": "Needs Improvement",
+    "rank": 2
+  },
+  {
+    "name": "WYCLIFFE OTIENO",
+    "subjects": {
+      "English": 20
+    },
+    "remarks": "",
+    "total": 20,
+    "performance": "Needs Improvement",
+    "rank": 3
+  }
+]
